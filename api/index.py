@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import csv
+from pymongo.mongo_client import MongoClient
 
 app = Flask(__name__)
 CORS(app)
@@ -19,6 +20,32 @@ def get_cities(state):
     result =process_csv_by_columns("result.csv", [0], [state], return_all=True)
     return {"state": state ,"cities": result}
     
+@app.route('/processform', methods=['POST'])
+def process_form():
+    data = request.get_json()
+    db_username = "lsimelus"
+    db_password = "3dJe12IeoelzSi0g"
+    uri = f"mongodb+srv://{db_username}:{db_password}@portfoliodb.mns6gqt.mongodb.net/?retryWrites=true&w=majority&appName=PortfolioDB"
+    client = MongoClient(uri)
+    
+    try:
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+        
+        db = client['form']
+        collection = db['portfolio']
+        
+        result = collection.insert_one({
+        'name': data['name'],
+        'email': data['email'],
+        'message': data['message'],
+        'subject': data['subject']
+        })
+        
+        return jsonify({'success': True, 'inserted_id': str(result.inserted_id)}), 201
+
+    except Exception as e:
+        return jsonify({'success': False}), 500
 
 
 
