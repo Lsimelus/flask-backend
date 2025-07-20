@@ -13,7 +13,7 @@ def get_items(state, city):
     
     if result is None:
         return jsonify({})
-    return jsonify({'state': result[0], 'city': result[1], "county": result[2], "median_value": result[3], "median_tax": result[4]})
+    return jsonify({'state': result[0], 'city': result[1], "county": result[2], "median_value": result[3], "median_tax": result[4], "median_rent": result[5]})
 
 @app.route('/cities/<state>', methods=['GET'])
 def get_cities(state):
